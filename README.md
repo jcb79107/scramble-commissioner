@@ -4,14 +4,17 @@ An open-source, commissioner-first web app for running golf scrambles.
 
 The app is designed for small events with 4-6 teams where one commissioner manages the event, one scorer per team enters scores, and proxy markers can enter closest-to-the-pin or long-drive attempts. It tracks live standings, side games, payouts, and who owes what.
 
+Live site: https://scramble-commissioner.vercel.app
+
 ## Current Status
 
-This is the first functional build. The UI is intentionally plain until the event logo/brand direction is provided.
+This is the first hosted functional build. The UI uses the Scramble logo assets with a Masters-inspired color system.
 
 Included now:
 
 - Next.js app scaffold
 - Chevy Chase Country Club Scramble seed event
+- Branded commissioner workspace
 - Team score entry
 - Proxy entry for closest-to-the-pin and long drive
 - Live leaderboard calculation
