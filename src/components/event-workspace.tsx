@@ -86,26 +86,24 @@ export function EventWorkspace() {
     <main className="min-h-screen bg-[#f3f5ee] text-[#1b241c]">
       <div className="mx-auto flex w-full max-w-7xl flex-col gap-6 px-4 py-5 sm:px-6 lg:px-8">
         <header className="grid gap-5 border-b border-[#d5dccd] pb-5 lg:grid-cols-[minmax(0,1fr)_520px] lg:items-end">
-          <div className="flex min-w-0 items-center gap-4">
-            <div className="flex h-28 w-20 shrink-0 items-center justify-center rounded-md bg-white shadow-sm ring-1 ring-[#d5dccd] sm:h-32 sm:w-24">
+          <div className="min-w-0">
+            <div className="flex h-20 max-w-3xl items-center rounded-md bg-black px-3 shadow-sm ring-1 ring-[#172019] sm:h-24 sm:px-4">
               <Image
-                src="/brand/scramble-logo.webp"
+                src="/brand/scramble-illinois-logo.webp"
                 alt="Scramble logo"
-                width={96}
-                height={224}
+                width={1280}
+                height={313}
                 priority
-                className="h-full w-auto object-contain p-1"
+                className="h-full w-full object-contain"
               />
             </div>
-            <div className="min-w-0">
-              <p className="text-sm font-semibold uppercase text-[#087138]">Scramble HQ</p>
-              <h1 className="mt-1 text-3xl font-semibold text-[#172019] sm:text-4xl">
-                {event.name}
-              </h1>
-              <p className="mt-2 max-w-3xl text-sm leading-6 text-[#596256]">
-                {event.date} · {event.venue} · {event.address}
-              </p>
-            </div>
+            <p className="mt-4 text-sm font-semibold uppercase text-[#087138]">Scramble HQ</p>
+            <h1 className="mt-1 text-3xl font-semibold text-[#172019] sm:text-4xl">
+              {event.name}
+            </h1>
+            <p className="mt-2 max-w-3xl text-sm leading-6 text-[#596256]">
+              {event.date} · {event.venue} · {event.address}
+            </p>
           </div>
           <div className="grid grid-cols-2 gap-2 text-sm sm:grid-cols-4">
             <Metric icon={<Users size={16} />} label="Teams" value={event.teams.length} />
