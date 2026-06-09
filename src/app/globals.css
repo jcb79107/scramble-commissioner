@@ -1,21 +1,30 @@
 @import "tailwindcss";
 
 :root {
-  --background: #f3f5ee;
-  --foreground: #1b241c;
+  --masters-green: #076652;
+  --masters-green-dark: #043e33;
+  --masters-green-soft: #e7f0eb;
+  --masters-yellow: #ffdf00;
+  --fairway: #f5f2e7;
+  --ink: #111c18;
+  --muted: #5d6861;
+  --line: #cbd8ce;
+  --surface: #fffdf4;
+  --background: var(--fairway);
+  --foreground: var(--ink);
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-libre-franklin);
+  --font-display: var(--font-newsreader);
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
+  font-family: var(--font-libre-franklin), Arial, Helvetica, sans-serif;
 }
 
 button,
@@ -27,6 +36,11 @@ select {
 button,
 input,
 select {
-  outline-color: #d7193f;
+  outline-color: var(--masters-yellow);
   outline-offset: 2px;
+}
+
+::selection {
+  background: var(--masters-yellow);
+  color: var(--masters-green-dark);
 }

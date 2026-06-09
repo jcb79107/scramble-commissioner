@@ -83,11 +83,11 @@ export function EventWorkspace() {
   }
 
   return (
-    <main className="min-h-screen bg-[#f3f5ee] text-[#1b241c]">
-      <div className="mx-auto flex w-full max-w-7xl flex-col gap-6 px-4 py-5 sm:px-6 lg:px-8">
-        <header className="grid gap-5 border-b border-[#d5dccd] pb-5 lg:grid-cols-[minmax(0,1fr)_520px] lg:items-end">
+    <main className="min-h-screen bg-[var(--fairway)] text-[var(--ink)]">
+      <div className="mx-auto flex w-full max-w-7xl flex-col gap-5 px-4 py-4 sm:px-6 lg:px-8">
+        <header className="grid overflow-hidden rounded-md border border-[var(--masters-green-dark)] bg-[var(--masters-green)] shadow-sm lg:grid-cols-[minmax(0,1fr)_440px]">
           <div className="min-w-0">
-            <div className="flex h-20 max-w-3xl items-center rounded-md bg-black px-3 shadow-sm ring-1 ring-[#172019] sm:h-24 sm:px-4">
+            <div className="flex h-20 items-center border-b border-white/15 bg-[#070908] px-3 sm:h-24 sm:px-5 lg:max-w-4xl">
               <Image
                 src="/brand/scramble-illinois-logo.webp"
                 alt="Scramble logo"
@@ -97,15 +97,19 @@ export function EventWorkspace() {
                 className="h-full w-full object-contain"
               />
             </div>
-            <p className="mt-4 text-sm font-semibold uppercase text-[#087138]">Scramble HQ</p>
-            <h1 className="mt-1 text-3xl font-semibold text-[#172019] sm:text-4xl">
+            <div className="p-4 sm:p-5">
+            <p className="text-xs font-black uppercase text-[var(--masters-yellow)]">
+              Scramble HQ
+            </p>
+            <h1 className="mt-1 font-display text-3xl font-semibold text-white sm:text-5xl">
               {event.name}
             </h1>
-            <p className="mt-2 max-w-3xl text-sm leading-6 text-[#596256]">
+            <p className="mt-2 max-w-3xl text-sm font-medium leading-6 text-[#dce9df]">
               {event.date} · {event.venue} · {event.address}
             </p>
+            </div>
           </div>
-          <div className="grid grid-cols-2 gap-2 text-sm sm:grid-cols-4">
+          <div className="grid grid-cols-2 gap-px bg-[var(--masters-green-dark)] text-sm sm:grid-cols-4 lg:grid-cols-2">
             <Metric icon={<Users size={16} />} label="Teams" value={event.teams.length} />
             <Metric
               icon={<Flag size={16} />}
@@ -127,16 +131,19 @@ export function EventWorkspace() {
           <Metric icon={<DollarSign size={16} />} label="Outstanding" value={`$${outstanding}`} />
         </section>
 
-        <nav className="grid grid-cols-2 gap-2 sm:grid-cols-5" aria-label="Event workspace views">
+        <nav
+          className="grid grid-cols-2 gap-2 border-y border-[var(--line)] py-3 sm:grid-cols-5"
+          aria-label="Event workspace views"
+        >
           {views.map((view) => (
             <button
               key={view.id}
               type="button"
               onClick={() => setActiveView(view.id)}
-              className={`flex min-h-11 items-center justify-center gap-2 rounded-md border px-3 text-sm font-semibold transition ${
+              className={`flex min-h-11 items-center justify-center gap-2 rounded-md border px-3 text-sm font-black transition ${
                 activeView === view.id
-                  ? "border-[#006b38] bg-[#006b38] text-white shadow-sm"
-                  : "border-[#d5dccd] bg-white text-[#1b241c] hover:border-[#087138]"
+                  ? "border-[var(--masters-green)] bg-[var(--masters-green)] text-white shadow-sm"
+                  : "border-[var(--line)] bg-[var(--surface)] text-[var(--ink)] hover:border-[var(--masters-green)]"
               }`}
             >
               {view.icon}
@@ -150,19 +157,22 @@ export function EventWorkspace() {
             <Panel title="Event Setup">
               <div className="grid gap-3 md:grid-cols-2">
                 {event.teams.map((team) => (
-                  <div key={team.id} className="rounded-md border border-[#d5dccd] bg-white p-4">
+                  <div
+                    key={team.id}
+                    className="rounded-md border border-[var(--line)] bg-[var(--surface)] p-4"
+                  >
                     <div className="flex items-center justify-between gap-3">
                       <div>
                         <h2 className="font-semibold">{team.name}</h2>
                         <p className="text-sm text-[#62675f]">{team.teeTime}</p>
                       </div>
-                      <LinkIcon size={17} className="text-[#087138]" />
+                      <LinkIcon size={17} className="text-[var(--masters-green)]" />
                     </div>
                     <ul className="mt-3 space-y-1 text-sm">
                       {team.players.map((player) => (
                         <li key={player.id} className="flex justify-between gap-3">
                           <span>{player.name}</span>
-                          <span className="text-[#66715f]">
+                          <span className="text-[var(--muted)]">
                             {player.sideGames.length ? player.sideGames.length : "-"}
                           </span>
                         </li>
@@ -173,7 +183,7 @@ export function EventWorkspace() {
               </div>
             </Panel>
             <Panel title="Rules">
-              <ul className="space-y-2 text-sm text-[#454b43]">
+              <ul className="space-y-2 text-sm text-[var(--muted)]">
                 {event.rules.map((rule) => (
                   <li key={rule}>{rule}</li>
                 ))}
@@ -192,7 +202,7 @@ export function EventWorkspace() {
                 id="team-select"
                 value={selectedTeamId}
                 onChange={(event) => setSelectedTeamId(event.target.value)}
-                className="min-h-11 rounded-md border border-[#bfc8b8] bg-white px-3 text-sm"
+                className="min-h-11 rounded-md border border-[var(--line)] bg-[var(--surface)] px-3 text-sm"
               >
                 {event.teams.map((team) => (
                   <option key={team.id} value={team.id}>
@@ -210,7 +220,7 @@ export function EventWorkspace() {
                 return (
                   <label
                     key={hole.number}
-                    className="rounded-md border border-[#d5dccd] bg-white p-3 text-sm"
+                    className="rounded-md border border-[var(--line)] bg-[var(--surface)] p-3 text-sm"
                   >
                     <span className="mb-2 block font-semibold">Hole {hole.number}</span>
                     <input
@@ -220,7 +230,7 @@ export function EventWorkspace() {
                       onChange={(event) =>
                         updateScore(selectedTeam.id, hole.number, event.target.value)
                       }
-                      className="h-10 w-full rounded-md border border-[#bfc8b8] px-2"
+                      className="h-10 w-full rounded-md border border-[var(--line)] bg-white px-2"
                     />
                   </label>
                 );
@@ -237,7 +247,7 @@ export function EventWorkspace() {
                 <select
                   value={selectedProxyHole}
                   onChange={(event) => setSelectedProxyHole(Number(event.target.value))}
-                  className="min-h-11 rounded-md border border-[#bfc8b8] bg-white px-3"
+                  className="min-h-11 rounded-md border border-[var(--line)] bg-[var(--surface)] px-3"
                 >
                   {event.holes
                     .filter((hole) => hole.sideGame)
@@ -252,7 +262,7 @@ export function EventWorkspace() {
                 Player
                 <select
                   name="playerId"
-                  className="min-h-11 rounded-md border border-[#bfc8b8] bg-white px-3"
+                  className="min-h-11 rounded-md border border-[var(--line)] bg-[var(--surface)] px-3"
                 >
                   {proxyPlayers.map((player) => (
                     <option key={player.id} value={player.id}>
@@ -269,12 +279,12 @@ export function EventWorkspace() {
                   type="number"
                   min="0"
                   step="0.1"
-                  className="min-h-11 rounded-md border border-[#bfc8b8] bg-white px-3"
+                  className="min-h-11 rounded-md border border-[var(--line)] bg-[var(--surface)] px-3"
                 />
               </label>
               <button
                 type="submit"
-                className="mt-auto min-h-11 rounded-md bg-[#006b38] px-4 text-sm font-semibold text-white shadow-sm hover:bg-[#075a32]"
+                className="mt-auto min-h-11 rounded-md bg-[var(--masters-green)] px-4 text-sm font-black text-white shadow-sm hover:bg-[var(--masters-green-dark)]"
               >
                 Add Entry
               </button>
@@ -331,20 +341,22 @@ function Metric({
   value: string | number;
 }) {
   return (
-    <div className="rounded-md border border-[#d5dccd] bg-white p-3 shadow-sm">
-      <div className="flex items-center gap-2 text-xs font-semibold uppercase text-[#566352]">
+    <div className="border border-[var(--line)] bg-[var(--surface)] p-3 shadow-sm">
+      <div className="flex items-center gap-2 text-xs font-black uppercase text-[var(--masters-green)]">
         {icon}
         {label}
       </div>
-      <div className="mt-1 text-xl font-semibold text-[#172019]">{value}</div>
+      <div className="mt-1 font-display text-2xl font-semibold text-[var(--ink)]">{value}</div>
     </div>
   );
 }
 
 function Panel({ title, children }: { title: string; children: ReactNode }) {
   return (
-    <section className="rounded-md border border-[#d5dccd] bg-[#fbfcf7] p-4 shadow-sm">
-      <h2 className="mb-4 text-lg font-semibold text-[#172019]">{title}</h2>
+    <section className="py-1">
+      <h2 className="mb-4 border-b border-[var(--line)] pb-2 font-display text-2xl font-semibold text-[var(--masters-green-dark)]">
+        {title}
+      </h2>
       {children}
     </section>
   );
@@ -352,9 +364,9 @@ function Panel({ title, children }: { title: string; children: ReactNode }) {
 
 function SimpleTable({ headers, rows }: { headers: string[]; rows: string[][] }) {
   return (
-    <div className="overflow-x-auto rounded-md border border-[#d5dccd] bg-white">
+    <div className="overflow-x-auto rounded-md border border-[var(--line)] bg-[var(--surface)]">
       <table className="w-full min-w-[620px] border-collapse text-left text-sm">
-        <thead className="bg-[#eef2e8] text-xs uppercase text-[#555e52]">
+        <thead className="bg-[var(--masters-green)] text-xs uppercase text-white">
           <tr>
             {headers.map((header) => (
               <th key={header} className="px-3 py-3 font-semibold">
@@ -365,7 +377,7 @@ function SimpleTable({ headers, rows }: { headers: string[]; rows: string[][] })
         </thead>
         <tbody>
           {rows.map((row, rowIndex) => (
-            <tr key={`${row.join("-")}-${rowIndex}`} className="border-t border-[#edf0e5]">
+            <tr key={`${row.join("-")}-${rowIndex}`} className="border-t border-[var(--line)]">
               {row.map((cell, cellIndex) => (
                 <td key={`${cell}-${cellIndex}`} className="px-3 py-3">
                   {cell}
