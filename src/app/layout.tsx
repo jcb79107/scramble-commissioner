@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Scramble Commissioner",
-  description: "A commissioner-first app for running golf scrambles.",
+  title: "Scramble HQ",
+  description: "A commissioner-first app for running open-source golf scrambles.",
 };
 
 export default function RootLayout({
