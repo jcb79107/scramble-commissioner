@@ -16,6 +16,7 @@ import {
 type AdminPageProps = {
   searchParams: Promise<{
     error?: string | string[] | undefined;
+    section?: string | string[] | undefined;
   }>;
 };
 
@@ -31,6 +32,7 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
         <AdminHQ
           event={event}
           origin={getRequestOrigin(requestHeaders)}
+          activeSection={getAdminSection(params.section)}
           logoutAction={logoutAdmin}
           updateEventAction={updateEventDetailsAction}
           updateMoneyAction={updateMoneySettingsAction}
@@ -42,4 +44,15 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
       )}
     </AppFrame>
   );
+}
+
+function getAdminSection(value: string | string[] | undefined) {
+  const section = Array.isArray(value) ? value[0] : value;
+
+  return section === "links" ||
+    section === "teams" ||
+    section === "scores" ||
+    section === "money"
+    ? section
+    : "overview";
 }

@@ -1,6 +1,14 @@
 import { getEligibleContestPlayers, formatSideGame } from "@/lib/event-summary";
 import type { HoleConfig, ScrambleEvent, SideGameKind } from "@/lib/types";
-import { BrandHeader, ScreenBody, Section, StatGrid, StatTile, SubmitButton } from "./scramble-shell";
+import {
+  BrandHeader,
+  ScreenBody,
+  SecondaryLink,
+  Section,
+  StatGrid,
+  StatTile,
+  SubmitButton,
+} from "./scramble-shell";
 
 export function ContestEntry({
   event,
@@ -19,9 +27,10 @@ export function ContestEntry({
   return (
     <>
       <BrandHeader
-        eyebrow="Contest Link"
+        eyebrow="Private contest link"
         title={`Hole ${hole.number}`}
         meta={`${formatSideGame(sideGame)} - ${hole.label ?? event.venue}`}
+        action={<SecondaryLink href="/">Board</SecondaryLink>}
       />
       <ScreenBody>
         <StatGrid>
@@ -37,7 +46,7 @@ export function ContestEntry({
                 <select
                   name="playerId"
                   required
-                  className="min-h-12 rounded-md border border-[var(--line)] bg-white px-3"
+                  className="min-h-12 rounded-2xl border border-[var(--mist)] bg-white px-4"
                 >
                   {players.map((player) => (
                     <option key={player.id} value={player.id}>
@@ -56,7 +65,7 @@ export function ContestEntry({
                   step="0.1"
                   inputMode="decimal"
                   required
-                  className="min-h-12 rounded-md border border-[var(--line)] bg-white px-3 text-lg font-black"
+                  className="min-h-12 rounded-2xl border border-[var(--mist)] bg-white px-4 text-lg font-semibold"
                 />
               </label>
 
@@ -64,7 +73,7 @@ export function ContestEntry({
                 Result
                 <select
                   name="isValid"
-                  className="min-h-12 rounded-md border border-[var(--line)] bg-white px-3"
+                  className="min-h-12 rounded-2xl border border-[var(--mist)] bg-white px-4"
                   defaultValue="true"
                 >
                   <option value="true">
@@ -80,7 +89,7 @@ export function ContestEntry({
         </form>
 
         <Section title="Current Entries">
-          <div className="space-y-1">
+              <div className="overflow-hidden rounded-[22px] border border-[var(--mist)] bg-white">
             {event.proxyEntries
               .filter((entry) => entry.hole === hole.number && entry.kind === sideGame)
               .map((entry) => {
@@ -89,7 +98,7 @@ export function ContestEntry({
                 return (
                   <div
                     key={entry.id}
-                    className="flex items-center justify-between border-b border-[var(--line)] py-2 text-sm last:border-b-0"
+                    className="flex min-h-14 items-center justify-between border-b border-[var(--mist)] px-4 py-3 text-sm last:border-b-0"
                   >
                     <span className="font-black">{player?.name ?? "Unknown"}</span>
                     <span className="text-[var(--muted)]">
@@ -100,7 +109,7 @@ export function ContestEntry({
               })}
             {!event.proxyEntries.some(
               (entry) => entry.hole === hole.number && entry.kind === sideGame,
-            ) && <p className="text-sm text-[var(--muted)]">No entries yet.</p>}
+            ) && <p className="px-4 py-5 text-sm text-[var(--muted)]">No entries yet.</p>}
           </div>
         </Section>
       </ScreenBody>
