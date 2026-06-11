@@ -1,16 +1,22 @@
 @import "tailwindcss";
 
 :root {
-  --masters-green: #076652;
-  --masters-green-dark: #043e33;
+  --brand-green: #006536;
+  --brand-green-dark: #043e25;
+  --masters-green: var(--brand-green);
+  --masters-green-dark: var(--brand-green-dark);
   --masters-green-soft: #e7f0eb;
-  --masters-yellow: #ffdf00;
+  --brand-yellow: #fff200;
+  --flag-red: #d4053a;
+  --masters-yellow: var(--brand-yellow);
+  --club-bg: #e9eadf;
   --fairway: #f5f2e7;
+  --paper: #fffdf4;
   --ink: #111c18;
   --muted: #5d6861;
   --line: #cbd8ce;
-  --surface: #fffdf4;
-  --background: var(--fairway);
+  --surface: var(--paper);
+  --background: var(--club-bg);
   --foreground: var(--ink);
 }
 
@@ -31,6 +37,11 @@ button,
 input,
 select {
   font: inherit;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
 }
 
 button,

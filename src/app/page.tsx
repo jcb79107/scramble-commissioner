@@ -1,37 +1,27 @@
-import { EventWorkspace } from "@/components/event-workspace";
-import { headers } from "next/headers";
+import { redirect } from "next/navigation";
+import { PublicEventBoard } from "@/components/public-event-board";
+import { AppFrame } from "@/components/scramble-shell";
+import { getLegacyRedirectPath } from "@/lib/access-links";
+import { getActiveEvent } from "@/lib/event-store";
 
 type HomeProps = {
   searchParams: Promise<{
     access?: string | string[] | undefined;
+    invalid?: string | string[] | undefined;
   }>;
 };
 
 export default async function Home({ searchParams }: HomeProps) {
   const params = await searchParams;
-  const requestHeaders = await headers();
+  const event = await getActiveEvent();
+
+  if (params.access) {
+    redirect(getLegacyRedirectPath(event, params.access));
+  }
 
   return (
-    <EventWorkspace
-      baseOrigin={getRequestOrigin(requestHeaders)}
-      initialAccessToken={params.access ?? null}
-    />
+    <AppFrame>
+      <PublicEventBoard event={event} invalidAccess={Boolean(params.invalid)} />
+    </AppFrame>
   );
-}
-
-function getRequestOrigin(requestHeaders: Headers) {
-  const forwardedHost = firstHeaderValue(requestHeaders.get("x-forwarded-host"));
-  const host = forwardedHost ?? firstHeaderValue(requestHeaders.get("host"));
-  const forwardedProto = firstHeaderValue(requestHeaders.get("x-forwarded-proto"));
-  const proto = forwardedProto ?? (isLocalHost(host) ? "http" : "https");
-
-  return host ? `${proto}://${host}` : undefined;
-}
-
-function firstHeaderValue(value: string | null) {
-  return value?.split(",")[0]?.trim() || null;
-}
-
-function isLocalHost(host: string | null | undefined) {
-  return host?.startsWith("localhost") || host?.startsWith("127.0.0.1") || host?.startsWith("[::1]");
 }

@@ -61,6 +61,7 @@ const teams: Team[] = [
     name: "Team 9:30",
     teeTime: "9:30 AM",
     accessToken: "team-930-preview-token",
+    captainPlayerId: "peter-barsi",
     players: [
       player("peter-barsi", "Peter Barsi"),
       player("joey-saslow", "Joey Saslow"),
@@ -73,6 +74,7 @@ const teams: Team[] = [
     name: "Team 9:40",
     teeTime: "9:40 AM",
     accessToken: "team-940-preview-token",
+    captainPlayerId: "josh-kravitz",
     players: [
       player("josh-kravitz", "Josh Kravitz"),
       player("sam-isaacson", "Sam Isaacson"),
@@ -85,6 +87,7 @@ const teams: Team[] = [
     name: "Team 9:50",
     teeTime: "9:50 AM",
     accessToken: "team-950-preview-token",
+    captainPlayerId: "ap",
     players: [
       player("ap", "AP"),
       player("jason-baer", "Jason Baer"),
@@ -97,6 +100,7 @@ const teams: Team[] = [
     name: "Team 10:00",
     teeTime: "10:00 AM",
     accessToken: "team-1000-preview-token",
+    captainPlayerId: "adam-erickson",
     players: [
       player("adam-erickson", "Adam Erickson"),
       player("sam-sherman", "Sam Sherman"),
@@ -109,6 +113,7 @@ const teams: Team[] = [
     name: "Team 10:10",
     teeTime: "10:10 AM",
     accessToken: "team-1010-preview-token",
+    captainPlayerId: "jackson-kramer",
     players: [
       player("jackson-kramer", "Jackson Kramer"),
       player("noah-reimer", "Noah Reimer"),
@@ -121,6 +126,7 @@ const teams: Team[] = [
     name: "Team 10:20",
     teeTime: "10:20 AM",
     accessToken: "team-1020-preview-token",
+    captainPlayerId: "dylan-brown",
     players: [
       player("dylan-brown", "Dylan Brown"),
       player("isaac-jolcover", "Isaac Jolcover"),
@@ -156,6 +162,7 @@ export const chevyChaseSeed: ScrambleEvent = {
         teeYardage: ctpYardages[number],
         sideGame: "closest_to_pin" as const,
         label: `Closest to the Pin (${ctpYardages[number]} yards)`,
+        contestAccessToken: `contest-hole-${number}-preview-token`,
       };
     }
 
@@ -165,6 +172,7 @@ export const chevyChaseSeed: ScrambleEvent = {
         par: 5,
         sideGame: "long_drive" as const,
         label: "Long Drive",
+        contestAccessToken: `contest-hole-${number}-preview-token`,
       };
     }
 

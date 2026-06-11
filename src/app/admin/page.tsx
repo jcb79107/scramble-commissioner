@@ -1,0 +1,45 @@
+import { headers } from "next/headers";
+import { AdminHQ, AdminLogin } from "@/components/admin-hq";
+import { AppFrame } from "@/components/scramble-shell";
+import { isAdminAuthenticated } from "@/lib/admin-auth";
+import { getActiveEvent } from "@/lib/event-store";
+import { getRequestOrigin } from "@/lib/request-origin";
+import {
+  loginAdmin,
+  logoutAdmin,
+  updateEventDetailsAction,
+  updateMoneySettingsAction,
+  updateScoreOverrideAction,
+  updateTeamDetailsAction,
+} from "./actions";
+
+type AdminPageProps = {
+  searchParams: Promise<{
+    error?: string | string[] | undefined;
+  }>;
+};
+
+export default async function AdminPage({ searchParams }: AdminPageProps) {
+  const params = await searchParams;
+  const authenticated = await isAdminAuthenticated();
+  const event = await getActiveEvent();
+  const requestHeaders = await headers();
+
+  return (
+    <AppFrame>
+      {authenticated ? (
+        <AdminHQ
+          event={event}
+          origin={getRequestOrigin(requestHeaders)}
+          logoutAction={logoutAdmin}
+          updateEventAction={updateEventDetailsAction}
+          updateMoneyAction={updateMoneySettingsAction}
+          updateTeamAction={updateTeamDetailsAction}
+          updateScoreAction={updateScoreOverrideAction}
+        />
+      ) : (
+        <AdminLogin error={Boolean(params.error)} action={loginAdmin} />
+      )}
+    </AppFrame>
+  );
+}

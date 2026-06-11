@@ -1,69 +1,46 @@
 import { describe, expect, it } from "vitest";
 import {
-  buildAccessUrl,
+  buildContestUrl,
   buildPrivateAccessLinks,
-  canAccessView,
+  buildScoreUrl,
+  getLegacyRedirectPath,
   normalizeAccessToken,
   resolveAccessToken,
 } from "./access-links";
 import { chevyChaseSeed } from "./chevy-chase-seed";
 
 describe("access links", () => {
-  it("defaults root visitors to the public leaderboard role", () => {
-    const access = resolveAccessToken(chevyChaseSeed, null);
-
-    expect(access).toMatchObject({
+  it("defaults root visitors to public access", () => {
+    expect(resolveAccessToken(chevyChaseSeed, null)).toMatchObject({
       role: "public_viewer",
       teamId: null,
+      holeNumber: null,
       isValid: true,
       source: "default_public",
     });
   });
 
-  it("resolves commissioner, proxy, public, and team scoring tokens", () => {
-    expect(resolveAccessToken(chevyChaseSeed, chevyChaseSeed.commissionerToken)).toMatchObject({
-      role: "commissioner",
-      isValid: true,
-    });
-    expect(resolveAccessToken(chevyChaseSeed, chevyChaseSeed.proxyToken)).toMatchObject({
-      role: "proxy_marker",
-      isValid: true,
-    });
-    expect(resolveAccessToken(chevyChaseSeed, chevyChaseSeed.publicToken)).toMatchObject({
-      role: "public_viewer",
-      isValid: true,
-    });
+  it("resolves team scoring and contest marker tokens", () => {
     expect(resolveAccessToken(chevyChaseSeed, "team-950-preview-token")).toMatchObject({
       role: "team_scorer",
       teamId: "team-950",
       isValid: true,
     });
+
+    expect(resolveAccessToken(chevyChaseSeed, "contest-hole-6-preview-token")).toMatchObject({
+      role: "contest_marker",
+      holeNumber: 6,
+      sideGame: "closest_to_pin",
+      isValid: true,
+    });
   });
 
-  it("falls invalid tokens back to public-only mode", () => {
-    const access = resolveAccessToken(chevyChaseSeed, "bad-token");
-
-    expect(access).toMatchObject({
+  it("falls invalid tokens back to public mode", () => {
+    expect(resolveAccessToken(chevyChaseSeed, "bad-token")).toMatchObject({
       role: "public_viewer",
-      teamId: null,
       isValid: false,
       invalidToken: "bad-token",
     });
-    expect(canAccessView(access, "leaderboard")).toBe(true);
-    expect(canAccessView(access, "commissioner")).toBe(false);
-    expect(canAccessView(access, "scorecard")).toBe(false);
-  });
-
-  it("limits team and proxy links to their event-day views", () => {
-    const teamAccess = resolveAccessToken(chevyChaseSeed, "team-930-preview-token");
-    const proxyAccess = resolveAccessToken(chevyChaseSeed, chevyChaseSeed.proxyToken);
-
-    expect(canAccessView(teamAccess, "scorecard")).toBe(true);
-    expect(canAccessView(teamAccess, "leaderboard")).toBe(true);
-    expect(canAccessView(teamAccess, "money")).toBe(false);
-    expect(canAccessView(proxyAccess, "proxy")).toBe(true);
-    expect(canAccessView(proxyAccess, "leaderboard")).toBe(true);
-    expect(canAccessView(proxyAccess, "scorecard")).toBe(false);
   });
 
   it("normalizes query token inputs", () => {
@@ -73,27 +50,37 @@ describe("access links", () => {
     expect(normalizeAccessToken("   ")).toBeNull();
   });
 
-  it("builds access urls from local, preview, and production origins", () => {
-    expect(buildAccessUrl("http://localhost:3000", "abc")).toBe(
-      "http://localhost:3000/?access=abc",
+  it("builds clean path urls", () => {
+    expect(buildScoreUrl("http://localhost:3000", "abc")).toBe(
+      "http://localhost:3000/score/abc",
     );
-    expect(buildAccessUrl("https://preview.vercel.app/", "abc")).toBe(
-      "https://preview.vercel.app/?access=abc",
-    );
-    expect(buildAccessUrl("https://scramble-commissioner.vercel.app", "abc")).toBe(
-      "https://scramble-commissioner.vercel.app/?access=abc",
+    expect(buildContestUrl("https://preview.vercel.app/", "hole-6")).toBe(
+      "https://preview.vercel.app/contest/hole-6",
     );
   });
 
-  it("creates commissioner panel links for every operating role and team", () => {
+  it("creates admin, team, and contest private links", () => {
     const links = buildPrivateAccessLinks(chevyChaseSeed, "https://preview.vercel.app");
 
-    expect(links).toHaveLength(chevyChaseSeed.teams.length + 3);
-    expect(links.find((link) => link.id === "commissioner")?.href).toBe(
-      "https://preview.vercel.app/?access=commissioner-preview-token",
+    expect(links.find((link) => link.id === "admin")?.href).toBe(
+      "https://preview.vercel.app/admin",
     );
-    expect(links.filter((link) => link.role === "team_scorer").map((link) => link.teamId)).toEqual(
-      chevyChaseSeed.teams.map((team) => team.id),
+    expect(links.filter((link) => link.role === "team_scorer")).toHaveLength(
+      chevyChaseSeed.teams.length,
     );
+    expect(links.filter((link) => link.role === "contest_marker")).toHaveLength(8);
+  });
+
+  it("redirects legacy query tokens into clean routes", () => {
+    expect(getLegacyRedirectPath(chevyChaseSeed, "team-950-preview-token")).toBe(
+      "/score/team-950-preview-token",
+    );
+    expect(getLegacyRedirectPath(chevyChaseSeed, "contest-hole-6-preview-token")).toBe(
+      "/contest/contest-hole-6-preview-token",
+    );
+    expect(getLegacyRedirectPath(chevyChaseSeed, chevyChaseSeed.commissionerToken)).toBe(
+      "/admin",
+    );
+    expect(getLegacyRedirectPath(chevyChaseSeed, "bad-token")).toBe("/?invalid=1");
   });
 });

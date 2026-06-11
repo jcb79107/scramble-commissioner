@@ -13,8 +13,8 @@ const newsreader = Newsreader({
 });
 
 export const metadata: Metadata = {
-  title: "Scramble HQ",
-  description: "A commissioner-first app for running open-source golf scrambles.",
+  title: "Chevy Chase Scramble",
+  description: "Public results, private score entry, contest tracking, and admin tools for the Chevy Chase Scramble.",
 };
 
 export default function RootLayout({

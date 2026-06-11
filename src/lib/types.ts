@@ -2,7 +2,13 @@ export type SideGameKind = "closest_to_pin" | "long_drive";
 
 export type MoneyStatus = "owed" | "paid" | "refunded";
 
-export type AccessRole = "commissioner" | "team_scorer" | "proxy_marker" | "public_viewer";
+export type AccessRole =
+  | "admin"
+  | "commissioner"
+  | "contest_marker"
+  | "team_scorer"
+  | "proxy_marker"
+  | "public_viewer";
 
 export type Player = {
   id: string;
@@ -16,6 +22,7 @@ export type Team = {
   name: string;
   teeTime: string;
   accessToken: string;
+  captainPlayerId?: string;
   players: Player[];
 };
 
@@ -25,6 +32,7 @@ export type HoleConfig = {
   teeYardage?: number;
   sideGame?: SideGameKind;
   label?: string;
+  contestAccessToken?: string;
 };
 
 export type TeamScore = {

@@ -1,11 +1,11 @@
-import type { AccessRole, ScrambleEvent } from "./types";
-
-export type WorkspaceView = "commissioner" | "scorecard" | "proxy" | "leaderboard" | "money";
+import type { AccessRole, ScrambleEvent, SideGameKind } from "./types";
 
 export type AccessResolution = {
   role: AccessRole;
-  teamId: string | null;
   token: string | null;
+  teamId: string | null;
+  holeNumber: number | null;
+  sideGame: SideGameKind | null;
   isValid: boolean;
   invalidToken: string | null;
   source: "default_public" | "token";
@@ -17,6 +17,7 @@ export type PrivateAccessLink = {
   description: string;
   role: AccessRole;
   teamId: string | null;
+  holeNumber: number | null;
   href: string;
 };
 
@@ -42,66 +43,64 @@ export function resolveAccessToken(
   }
 
   if (token === event.commissionerToken) {
-    return validAccess("commissioner", token);
+    return validAccess({ role: "commissioner", token });
   }
 
   if (token === event.proxyToken) {
-    return validAccess("proxy_marker", token);
+    return validAccess({ role: "proxy_marker", token });
   }
 
   if (token === event.publicToken) {
-    return validAccess("public_viewer", token);
+    return validAccess({ role: "public_viewer", token });
   }
 
   const team = event.teams.find((item) => item.accessToken === token);
 
   if (team) {
-    return validAccess("team_scorer", token, team.id);
+    return validAccess({ role: "team_scorer", token, teamId: team.id });
+  }
+
+  const contestHole = event.holes.find((hole) => hole.contestAccessToken === token);
+
+  if (contestHole?.sideGame) {
+    return validAccess({
+      role: "contest_marker",
+      token,
+      holeNumber: contestHole.number,
+      sideGame: contestHole.sideGame,
+    });
   }
 
   return publicAccess(token, false, "token");
 }
 
-export function getDefaultViewForAccess(access: AccessResolution): WorkspaceView {
-  switch (access.role) {
-    case "commissioner":
-      return "commissioner";
-    case "team_scorer":
-      return "scorecard";
-    case "proxy_marker":
-      return "proxy";
-    case "public_viewer":
-      return "leaderboard";
-  }
-}
+export function getLegacyRedirectPath(event: ScrambleEvent, tokenValue: string | string[] | null | undefined) {
+  const access = resolveAccessToken(event, tokenValue);
 
-export function canAccessView(access: AccessResolution, view: WorkspaceView) {
-  if (access.role === "commissioner") {
-    return true;
+  if (!access.isValid) {
+    return "/?invalid=1";
   }
 
-  if (access.role === "team_scorer") {
-    return view === "scorecard" || view === "leaderboard";
+  if (access.role === "team_scorer" && access.token) {
+    return `/score/${encodeURIComponent(access.token)}`;
+  }
+
+  if (access.role === "contest_marker" && access.token) {
+    return `/contest/${encodeURIComponent(access.token)}`;
   }
 
   if (access.role === "proxy_marker") {
-    return view === "proxy" || view === "leaderboard";
+    const firstContest = event.holes.find((hole) => hole.contestAccessToken);
+    return firstContest?.contestAccessToken
+      ? `/contest/${encodeURIComponent(firstContest.contestAccessToken)}`
+      : "/";
   }
 
-  return view === "leaderboard";
-}
-
-export function getRoleLabel(access: AccessResolution) {
-  switch (access.role) {
-    case "commissioner":
-      return "Commissioner";
-    case "team_scorer":
-      return "Team scorer";
-    case "proxy_marker":
-      return "Proxy marker";
-    case "public_viewer":
-      return access.source === "default_public" ? "Public leaderboard" : "Public viewer";
+  if (access.role === "commissioner") {
+    return "/admin";
   }
+
+  return "/";
 }
 
 export function normalizeOrigin(value: string | null | undefined) {
@@ -120,11 +119,20 @@ export function normalizeOrigin(value: string | null | undefined) {
   }
 }
 
-export function buildAccessUrl(origin: string | null | undefined, token: string) {
-  const url = new URL("/", normalizeOrigin(origin));
-  url.searchParams.set("access", token);
+export function buildPathUrl(origin: string | null | undefined, pathname: string) {
+  return new URL(pathname, normalizeOrigin(origin)).toString();
+}
 
-  return url.toString();
+export function buildScoreUrl(origin: string | null | undefined, token: string) {
+  return buildPathUrl(origin, `/score/${encodeURIComponent(token)}`);
+}
+
+export function buildContestUrl(origin: string | null | undefined, token: string) {
+  return buildPathUrl(origin, `/contest/${encodeURIComponent(token)}`);
+}
+
+export function buildAdminUrl(origin: string | null | undefined) {
+  return buildPathUrl(origin, "/admin");
 }
 
 export function buildPrivateAccessLinks(
@@ -133,28 +141,13 @@ export function buildPrivateAccessLinks(
 ): PrivateAccessLink[] {
   return [
     {
-      id: "commissioner",
-      label: "Commissioner controls",
-      description: "Full event desk",
-      role: "commissioner",
+      id: "admin",
+      label: "Admin HQ",
+      description: "Password-protected event editing",
+      role: "admin",
       teamId: null,
-      href: buildAccessUrl(origin, event.commissionerToken),
-    },
-    {
-      id: "proxy-marker",
-      label: "Proxy marker",
-      description: "Closest-to-pin and long-drive entry",
-      role: "proxy_marker",
-      teamId: null,
-      href: buildAccessUrl(origin, event.proxyToken),
-    },
-    {
-      id: "public-viewer",
-      label: "Public leaderboard",
-      description: "Leaderboard-only viewer",
-      role: "public_viewer",
-      teamId: null,
-      href: buildAccessUrl(origin, event.publicToken),
+      holeNumber: null,
+      href: buildAdminUrl(origin),
     },
     ...event.teams.map((team) => ({
       id: team.id,
@@ -162,20 +155,42 @@ export function buildPrivateAccessLinks(
       description: `${team.teeTime} scorecard`,
       role: "team_scorer" as const,
       teamId: team.id,
-      href: buildAccessUrl(origin, team.accessToken),
+      holeNumber: null,
+      href: buildScoreUrl(origin, team.accessToken),
     })),
+    ...event.holes
+      .filter((hole) => hole.sideGame && hole.contestAccessToken)
+      .map((hole) => ({
+        id: `contest-${hole.number}`,
+        label: `Hole ${hole.number}`,
+        description: hole.label ?? formatSideGame(hole.sideGame),
+        role: "contest_marker" as const,
+        teamId: null,
+        holeNumber: hole.number,
+        href: buildContestUrl(origin, hole.contestAccessToken ?? ""),
+      })),
   ];
 }
 
-function validAccess(
-  role: AccessRole,
-  token: string,
-  teamId: string | null = null,
-): AccessResolution {
+function validAccess({
+  role,
+  token,
+  teamId = null,
+  holeNumber = null,
+  sideGame = null,
+}: {
+  role: AccessRole;
+  token: string;
+  teamId?: string | null;
+  holeNumber?: number | null;
+  sideGame?: SideGameKind | null;
+}): AccessResolution {
   return {
     role,
-    teamId,
     token,
+    teamId,
+    holeNumber,
+    sideGame,
     isValid: true,
     invalidToken: null,
     source: "token",
@@ -189,10 +204,16 @@ function publicAccess(
 ): AccessResolution {
   return {
     role: "public_viewer",
-    teamId: null,
     token: isValid ? token : null,
+    teamId: null,
+    holeNumber: null,
+    sideGame: null,
     isValid,
     invalidToken: isValid ? null : token,
     source,
   };
+}
+
+function formatSideGame(kind: SideGameKind | undefined) {
+  return kind === "closest_to_pin" ? "Closest to the Pin" : "Long Drive";
 }

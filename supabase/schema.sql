@@ -1,7 +1,9 @@
 create extension if not exists pgcrypto;
 
 create type access_role as enum (
+  'admin',
   'commissioner',
+  'contest_marker',
   'team_scorer',
   'proxy_marker',
   'public_viewer'
@@ -38,6 +40,8 @@ create table access_links (
   team_id uuid,
   role access_role not null,
   token text unique not null,
+  hole_number integer check (hole_number between 1 and 18),
+  side_game side_game_kind,
   created_at timestamptz default now() not null,
   expires_at timestamptz
 );
@@ -47,6 +51,7 @@ create table teams (
   event_id uuid references events(id) on delete cascade not null,
   name text not null,
   tee_time time,
+  captain_player_id uuid,
   display_order integer default 0 not null
 );
 
@@ -61,6 +66,10 @@ create table players (
   money_status money_status default 'owed' not null,
   display_order integer default 0 not null
 );
+
+alter table teams
+  add constraint teams_captain_player_id_fkey
+  foreign key (captain_player_id) references players(id) on delete set null;
 
 create table player_side_games (
   player_id uuid references players(id) on delete cascade not null,
@@ -106,6 +115,7 @@ create index scores_event_id_idx on scores(event_id);
 create index proxy_entries_event_hole_kind_idx on proxy_entries(event_id, hole_number, kind);
 create index teams_event_id_idx on teams(event_id);
 create index players_team_id_idx on players(team_id);
+create index access_links_event_role_idx on access_links(event_id, role);
 
 alter publication supabase_realtime add table scores;
 alter publication supabase_realtime add table proxy_entries;
@@ -120,4 +130,12 @@ alter table scores enable row level security;
 alter table proxy_entries enable row level security;
 
 -- V1 uses opaque access tokens checked by server actions/API routes.
--- Direct client table access stays closed until auth policies are added.
+-- Public event data can be read by anonymous users for the live event board.
+-- Access tokens remain server-only.
+create policy "Public read events" on events for select using (true);
+create policy "Public read teams" on teams for select using (true);
+create policy "Public read players" on players for select using (true);
+create policy "Public read player side games" on player_side_games for select using (true);
+create policy "Public read holes" on holes for select using (true);
+create policy "Public read scores" on scores for select using (true);
+create policy "Public read proxy entries" on proxy_entries for select using (true);
