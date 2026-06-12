@@ -22,6 +22,7 @@ export type PrivateAccessLink = {
 };
 
 export const PRODUCTION_ORIGIN = "https://scramble-commissioner.vercel.app";
+export const ADMIN_PATH = "/jason";
 
 export function normalizeAccessToken(
   value: string | string[] | null | undefined,
@@ -97,7 +98,7 @@ export function getLegacyRedirectPath(event: ScrambleEvent, tokenValue: string |
   }
 
   if (access.role === "commissioner") {
-    return "/admin";
+    return ADMIN_PATH;
   }
 
   return "/";
@@ -132,7 +133,7 @@ export function buildContestUrl(origin: string | null | undefined, token: string
 }
 
 export function buildAdminUrl(origin: string | null | undefined) {
-  return buildPathUrl(origin, "/admin");
+  return buildPathUrl(origin, ADMIN_PATH);
 }
 
 export function buildPrivateAccessLinks(

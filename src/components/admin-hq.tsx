@@ -1,4 +1,5 @@
 import {
+  ADMIN_PATH,
   buildPrivateAccessLinks,
   type PrivateAccessLink,
 } from "@/lib/access-links";
@@ -263,7 +264,7 @@ function AdminSectionNav({ activeSection }: { activeSection: AdminSection }) {
           return (
             <a
               key={link.section}
-              href={`/admin?section=${link.section}`}
+              href={`${ADMIN_PATH}?section=${link.section}`}
               aria-current={active ? "page" : undefined}
               className={
                 active

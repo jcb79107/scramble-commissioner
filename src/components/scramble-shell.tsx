@@ -43,20 +43,7 @@ export function PublicNav() {
                 {link.label}
               </a>
             ))}
-            <Link
-              href="/admin"
-              className="rounded-full bg-[var(--pine)] px-4 py-2 text-sm font-semibold text-white shadow-[0_10px_18px_rgba(17,32,23,0.16)]"
-            >
-              Admin
-            </Link>
           </nav>
-
-          <Link
-            href="/admin"
-            className="rounded-full border border-[var(--fairway)]/15 bg-white/88 px-3 py-1.5 text-xs font-medium text-[var(--ink)]/82 md:hidden"
-          >
-            Admin
-          </Link>
         </div>
       </header>
 

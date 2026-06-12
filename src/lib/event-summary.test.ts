@@ -6,7 +6,18 @@ describe("event summary", () => {
   it("uses the configured captain for a team", () => {
     const team = chevyChaseSeed.teams.find((item) => item.id === "team-950");
 
-    expect(team && getTeamCaptain(team).name).toBe("AP");
+    expect(team && getTeamCaptain(team).name).toBe("Ross Agins");
+  });
+
+  it("labels seed teams by captain last name", () => {
+    expect(chevyChaseSeed.teams.map((team) => team.name)).toEqual([
+      "Team Grant",
+      "Team Weinberger",
+      "Team Agins",
+      "Team Abrahams",
+      "Team Daitch",
+      "Team Rabin",
+    ]);
   });
 
   it("reports pre-round status before scores are entered", () => {

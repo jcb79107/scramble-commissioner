@@ -1,6 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
+import { ADMIN_PATH } from "@/lib/access-links";
 import {
   clearAdminSession,
   setAdminSession,
@@ -17,16 +18,16 @@ export async function loginAdmin(formData: FormData) {
   const password = String(formData.get("password") ?? "");
 
   if (!verifyAdminPassword(password)) {
-    redirect("/admin?error=1");
+    redirect(`${ADMIN_PATH}?error=1`);
   }
 
   await setAdminSession();
-  redirect("/admin");
+  redirect(ADMIN_PATH);
 }
 
 export async function logoutAdmin() {
   await clearAdminSession();
-  redirect("/admin");
+  redirect(ADMIN_PATH);
 }
 
 export async function updateEventDetailsAction(formData: FormData) {

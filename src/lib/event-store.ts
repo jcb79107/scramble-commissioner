@@ -1,5 +1,5 @@
 import { revalidatePath } from "next/cache";
-import { resolveAccessToken } from "./access-links";
+import { ADMIN_PATH, resolveAccessToken } from "./access-links";
 import { chevyChaseSeed } from "./chevy-chase-seed";
 import { createServerSupabaseClient } from "./supabase";
 import type {
@@ -281,7 +281,7 @@ function revalidateContestPaths(token: string) {
 
 function revalidateAllEventPaths() {
   revalidatePath("/");
-  revalidatePath("/admin");
+  revalidatePath(ADMIN_PATH);
 }
 
 async function fetchSupabaseEvent(client: ReturnType<typeof createServerSupabaseClient>) {

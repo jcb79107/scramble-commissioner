@@ -58,10 +58,10 @@ function player(id: string, name: string) {
 const teams: Team[] = [
   {
     id: "team-930",
-    name: "Team 9:30",
+    name: "Team Grant",
     teeTime: "9:30 AM",
     accessToken: "team-930-preview-token",
-    captainPlayerId: "peter-barsi",
+    captainPlayerId: "brandon-grant",
     players: [
       player("peter-barsi", "Peter Barsi"),
       player("joey-saslow", "Joey Saslow"),
@@ -71,10 +71,10 @@ const teams: Team[] = [
   },
   {
     id: "team-940",
-    name: "Team 9:40",
+    name: "Team Weinberger",
     teeTime: "9:40 AM",
     accessToken: "team-940-preview-token",
-    captainPlayerId: "josh-kravitz",
+    captainPlayerId: "jason-weinberger",
     players: [
       player("josh-kravitz", "Josh Kravitz"),
       player("sam-isaacson", "Sam Isaacson"),
@@ -84,10 +84,10 @@ const teams: Team[] = [
   },
   {
     id: "team-950",
-    name: "Team 9:50",
+    name: "Team Agins",
     teeTime: "9:50 AM",
     accessToken: "team-950-preview-token",
-    captainPlayerId: "ap",
+    captainPlayerId: "ross-agins",
     players: [
       player("ap", "AP"),
       player("jason-baer", "Jason Baer"),
@@ -97,10 +97,10 @@ const teams: Team[] = [
   },
   {
     id: "team-1000",
-    name: "Team 10:00",
+    name: "Team Abrahams",
     teeTime: "10:00 AM",
     accessToken: "team-1000-preview-token",
-    captainPlayerId: "adam-erickson",
+    captainPlayerId: "jonah-abrahams",
     players: [
       player("adam-erickson", "Adam Erickson"),
       player("sam-sherman", "Sam Sherman"),
@@ -110,10 +110,10 @@ const teams: Team[] = [
   },
   {
     id: "team-1010",
-    name: "Team 10:10",
+    name: "Team Daitch",
     teeTime: "10:10 AM",
     accessToken: "team-1010-preview-token",
-    captainPlayerId: "jackson-kramer",
+    captainPlayerId: "jacob-daitch",
     players: [
       player("jackson-kramer", "Jackson Kramer"),
       player("noah-reimer", "Noah Reimer"),
@@ -123,10 +123,10 @@ const teams: Team[] = [
   },
   {
     id: "team-1020",
-    name: "Team 10:20",
+    name: "Team Rabin",
     teeTime: "10:20 AM",
     accessToken: "team-1020-preview-token",
-    captainPlayerId: "dylan-brown",
+    captainPlayerId: "ryan-rabin",
     players: [
       player("dylan-brown", "Dylan Brown"),
       player("isaac-jolcover", "Isaac Jolcover"),

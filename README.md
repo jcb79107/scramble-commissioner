@@ -17,7 +17,7 @@ Included now:
 - Public event board at `/`
 - Private team score links at `/score/[token]`
 - Per-contest entry links at `/contest/[token]`
-- Password-protected admin HQ at `/admin`
+- Password-protected admin HQ on a hidden operator route
 - Live leaderboard calculation
 - Player-level buy-in, payout, and net balance calculation
 - Editable captains in the event model
@@ -44,12 +44,12 @@ Open `http://localhost:3000`.
 Useful local links:
 
 - Public leaderboard: `http://localhost:3000`
-- Admin HQ: `http://localhost:3000/admin`
+- Hidden admin HQ: `http://localhost:3000/jason`
 - Team 9:30 scorecard: `http://localhost:3000/score/team-930-preview-token`
 - Hole 6 contest entry: `http://localhost:3000/contest/contest-hole-6-preview-token`
 - Invalid-token check: `http://localhost:3000?access=bad-token`
 
-Local admin fallback password is `scramble-admin` when not running in production or Vercel.
+Local admin fallback password is `1436` when not running in production or Vercel.
 
 ## Event-Day Operator Notes
 
@@ -59,7 +59,7 @@ Use the production root URL as the public scoreboard:
 https://scramble-commissioner.vercel.app
 ```
 
-Open `/admin` before the round. Admin HQ includes private links for:
+Open `/jason` before the round. Admin HQ includes private links for:
 
 - Admin controls
 - Each team's locked scorecard link

@@ -59,7 +59,7 @@ function sign(value: string) {
 }
 
 function getAdminPassword() {
-  return process.env.SCRAMBLE_ADMIN_PASSWORD ?? getLocalFallback("scramble-admin");
+  return process.env.SCRAMBLE_ADMIN_PASSWORD ?? getLocalFallback("1436");
 }
 
 function getAdminSessionSecret() {
