@@ -22,7 +22,7 @@ export type PrivateAccessLink = {
 };
 
 export const PRODUCTION_ORIGIN = "https://scramble-commissioner.vercel.app";
-export const ADMIN_PATH = "/jason";
+export const ADMIN_PATH = "/admin";
 
 export function normalizeAccessToken(
   value: string | string[] | null | undefined,

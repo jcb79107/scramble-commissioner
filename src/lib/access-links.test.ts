@@ -63,7 +63,7 @@ describe("access links", () => {
     const links = buildPrivateAccessLinks(chevyChaseSeed, "https://preview.vercel.app");
 
     expect(links.find((link) => link.id === "admin")?.href).toBe(
-      "https://preview.vercel.app/jason",
+      "https://preview.vercel.app/admin",
     );
     expect(links.filter((link) => link.role === "team_scorer")).toHaveLength(
       chevyChaseSeed.teams.length,
@@ -79,7 +79,7 @@ describe("access links", () => {
       "/contest/contest-hole-6-preview-token",
     );
     expect(getLegacyRedirectPath(chevyChaseSeed, chevyChaseSeed.commissionerToken)).toBe(
-      "/jason",
+      "/admin",
     );
     expect(getLegacyRedirectPath(chevyChaseSeed, "bad-token")).toBe("/?invalid=1");
   });

@@ -44,7 +44,7 @@ Open `http://localhost:3000`.
 Useful local links:
 
 - Public leaderboard: `http://localhost:3000`
-- Hidden admin HQ: `http://localhost:3000/jason`
+- Admin HQ: `http://localhost:3000/admin`
 - Team 9:30 scorecard: `http://localhost:3000/score/team-930-preview-token`
 - Hole 6 contest entry: `http://localhost:3000/contest/contest-hole-6-preview-token`
 - Invalid-token check: `http://localhost:3000?access=bad-token`
@@ -59,7 +59,7 @@ Use the production root URL as the public scoreboard:
 https://scramble-commissioner.vercel.app
 ```
 
-Open `/jason` before the round. Admin HQ includes private links for:
+Open `/admin` before the round. Admin HQ includes private links for:
 
 - Admin controls
 - Each team's locked scorecard link
