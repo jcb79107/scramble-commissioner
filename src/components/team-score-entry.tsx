@@ -2,17 +2,19 @@ import Link from "next/link";
 import { buildLeaderboard } from "@/lib/calculations";
 import { getTeamCaptain } from "@/lib/event-summary";
 import type { ScrambleEvent, Team } from "@/lib/types";
-import { BrandHeader, Section, StatGrid, StatTile } from "./scramble-shell";
+import { BrandHeader, Section, StatGrid, StatTile, StatusNotice } from "./scramble-shell";
 import { TeamScorecardEditor } from "./team-scorecard-editor";
 
 export function TeamScoreEntry({
   event,
   team,
   action,
+  feedback,
 }: {
   event: ScrambleEvent;
   team: Team;
   action: (formData: FormData) => void | Promise<void>;
+  feedback?: { tone: "success" | "error"; message: string } | null;
 }) {
   const captain = getTeamCaptain(team);
   const leaderboard = buildLeaderboard(event);
@@ -33,6 +35,8 @@ export function TeamScoreEntry({
           </Link>
         }
       />
+
+      {feedback && <StatusNotice tone={feedback.tone}>{feedback.message}</StatusNotice>}
 
       <StatGrid>
         <StatTile label="Thru" value={teamRow?.thru ?? "0"} />

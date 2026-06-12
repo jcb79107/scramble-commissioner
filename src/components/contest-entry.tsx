@@ -8,6 +8,7 @@ import {
   StatGrid,
   StatTile,
   SubmitButton,
+  StatusNotice,
 } from "./scramble-shell";
 
 export function ContestEntry({
@@ -15,11 +16,13 @@ export function ContestEntry({
   hole,
   sideGame,
   action,
+  feedback,
 }: {
   event: ScrambleEvent;
   hole: HoleConfig;
   sideGame: SideGameKind;
   action: (formData: FormData) => void | Promise<void>;
+  feedback?: { tone: "success" | "error"; message: string } | null;
 }) {
   const players = getEligibleContestPlayers(event, sideGame);
   const unit = sideGame === "closest_to_pin" ? "feet" : "yards";
@@ -33,6 +36,8 @@ export function ContestEntry({
         action={<SecondaryLink href="/">Board</SecondaryLink>}
       />
       <ScreenBody>
+        {feedback && <StatusNotice tone={feedback.tone}>{feedback.message}</StatusNotice>}
+
         <StatGrid>
           <StatTile label="Contest" value={formatSideGame(sideGame)} />
           <StatTile label="Unit" value={unit} />

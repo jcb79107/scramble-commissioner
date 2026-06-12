@@ -191,6 +191,25 @@ export function SubmitButton({ children }: { children: ReactNode }) {
   );
 }
 
+export function StatusNotice({
+  tone,
+  children,
+}: {
+  tone: "success" | "error";
+  children: ReactNode;
+}) {
+  const styles =
+    tone === "success"
+      ? "border-[#b7d8c5] bg-[#edf8f0] text-[#174f38]"
+      : "border-[#f4b8b8] bg-[#fff1f1] text-[#a33b3b]";
+
+  return (
+    <div className={`rounded-[20px] border px-4 py-3 text-sm font-semibold ${styles}`}>
+      {children}
+    </div>
+  );
+}
+
 export function SecondaryLink({ href, children }: { href: string; children: ReactNode }) {
   return (
     <Link

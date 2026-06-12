@@ -1,4 +1,4 @@
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { ContestEntry } from "@/components/contest-entry";
 import { AppFrame } from "@/components/scramble-shell";
 import { resolveAccessToken } from "@/lib/access-links";
@@ -9,10 +9,15 @@ type ContestPageProps = {
   params: Promise<{
     token: string;
   }>;
+  searchParams: Promise<{
+    saved?: string | string[] | undefined;
+    error?: string | string[] | undefined;
+  }>;
 };
 
-export default async function ContestPage({ params }: ContestPageProps) {
+export default async function ContestPage({ params, searchParams }: ContestPageProps) {
   const { token } = await params;
+  const query = await searchParams;
   const event = await getActiveEvent();
   const access = resolveAccessToken(event, token);
 
@@ -33,12 +38,42 @@ export default async function ContestPage({ params }: ContestPageProps) {
 
   async function saveEntry(formData: FormData) {
     "use server";
-    await submitContestEntryAction(token, formData);
+    const result = await submitContestEntryAction(token, formData);
+    const target = result.ok
+      ? `/contest/${encodeURIComponent(token)}?saved=${encodeURIComponent(result.message)}`
+      : `/contest/${encodeURIComponent(token)}?error=${encodeURIComponent(result.message)}`;
+
+    redirect(target);
   }
 
   return (
     <AppFrame>
-      <ContestEntry event={event} hole={hole} sideGame={access.sideGame} action={saveEntry} />
+      <ContestEntry
+        event={event}
+        hole={hole}
+        sideGame={access.sideGame}
+        action={saveEntry}
+        feedback={getFeedback(query)}
+      />
     </AppFrame>
   );
+}
+
+function getFeedback(query: Awaited<ContestPageProps["searchParams"]>) {
+  const saved = getQueryValue(query.saved);
+  const error = getQueryValue(query.error);
+
+  if (error) {
+    return { tone: "error" as const, message: error };
+  }
+
+  if (saved) {
+    return { tone: "success" as const, message: saved };
+  }
+
+  return null;
+}
+
+function getQueryValue(value: string | string[] | undefined) {
+  return Array.isArray(value) ? value[0] : value;
 }
