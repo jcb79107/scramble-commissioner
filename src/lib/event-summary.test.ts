@@ -24,6 +24,16 @@ describe("event summary", () => {
     expect(getEventStatus(chevyChaseSeed)).toBe("Pre-round");
   });
 
+  it("seeds a complete par-72 scorecard", () => {
+    expect(chevyChaseSeed.holes).toHaveLength(18);
+    expect(chevyChaseSeed.holes.every((hole) => typeof hole.par === "number")).toBe(
+      true,
+    );
+    expect(chevyChaseSeed.holes.reduce((sum, hole) => sum + (hole.par ?? 0), 0)).toBe(
+      72,
+    );
+  });
+
   it("builds public fun stats from event data", () => {
     const stats = getFunStats(chevyChaseSeed);
 

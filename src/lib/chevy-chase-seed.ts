@@ -148,6 +148,17 @@ export const chevyChaseSeed: ScrambleEvent = {
   teams,
   holes: Array.from({ length: 18 }, (_, index) => {
     const number = index + 1;
+    const parByHole: Record<number, number> = {
+      2: 5,
+      4: 5,
+      6: 3,
+      9: 3,
+      13: 3,
+      15: 5,
+      16: 3,
+      18: 5,
+    };
+    const par = parByHole[number] ?? 4;
     const ctpYardages: Record<number, number> = {
       6: 117,
       9: 157,
@@ -158,7 +169,7 @@ export const chevyChaseSeed: ScrambleEvent = {
     if (number in ctpYardages) {
       return {
         number,
-        par: 3,
+        par,
         teeYardage: ctpYardages[number],
         sideGame: "closest_to_pin" as const,
         label: `Closest to the Pin (${ctpYardages[number]} yards)`,
@@ -169,14 +180,14 @@ export const chevyChaseSeed: ScrambleEvent = {
     if ([2, 4, 15, 18].includes(number)) {
       return {
         number,
-        par: 5,
+        par,
         sideGame: "long_drive" as const,
         label: "Long Drive",
         contestAccessToken: `contest-hole-${number}-preview-token`,
       };
     }
 
-    return { number };
+    return { number, par };
   }),
   scores: teams.flatMap((team) =>
     Array.from({ length: 18 }, (_, index) => ({
