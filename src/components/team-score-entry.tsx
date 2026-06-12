@@ -10,6 +10,7 @@ import {
   scorecardHeaderCellClass,
   scorecardLabelCellClass,
   scorecardScoreMarkClass,
+  scorecardScoreStyle,
 } from "./scorecard-table";
 import { BrandHeader, Section, StatGrid, StatTile, SubmitButton } from "./scramble-shell";
 
@@ -130,7 +131,7 @@ function SegmentScorecard({
     .reduce((sum, score) => sum + (score.strokes ?? 0), 0);
 
   return (
-    <div className="min-w-0 overflow-hidden rounded-[28px] border border-[#bfa66a] bg-white shadow-[0_12px_28px_rgba(76,58,26,0.08)]">
+    <div className="min-w-0 overflow-hidden rounded-[26px] border border-[#d7c28d] bg-white/92 p-4 shadow-[0_14px_34px_rgba(17,32,23,0.08)]">
       <div className="border-b border-[#c8b77f] bg-[#fbf5e6] px-4 py-3">
         <div className="flex items-center justify-between gap-3">
           <h3 className="text-sm font-semibold text-[var(--ink)]">{segmentLabel}</h3>
@@ -228,6 +229,8 @@ function SegmentScorecard({
           const score = event.scores.find(
             (item) => item.teamId === team.id && item.hole === holeNumber,
           );
+          const defaultScore = score?.strokes ?? "";
+          const par = hole?.par;
 
           return (
             <div
@@ -240,10 +243,10 @@ function SegmentScorecard({
                 min="1"
                 max="12"
                 inputMode="numeric"
-                defaultValue={score?.strokes ?? ""}
+                defaultValue={defaultScore}
                 aria-label={`${team.name} hole ${holeNumber} strokes`}
-                className={`mx-auto flex items-center justify-center rounded-full border-2 border-[var(--pine)]/30 bg-white text-center font-semibold text-[var(--ink)] outline-none transition focus:ring-2 focus:ring-[var(--pine)]/35 ${scorecardScoreMarkClass}`}
-                placeholder={hole?.par ? String(hole.par) : ""}
+                className={`mx-auto flex items-center justify-center text-center font-semibold outline-none transition focus:ring-2 focus:ring-[var(--pine)]/35 ${scorecardScoreMarkClass} ${scorecardScoreStyle(defaultScore, par)}`}
+                placeholder={par ? String(par) : ""}
               />
             </div>
           );

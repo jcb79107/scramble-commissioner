@@ -89,35 +89,10 @@ export function PublicEventBoard({
           </span>
         }
       >
-        <div className="overflow-hidden rounded-[22px] border border-[var(--mist)] bg-white">
-          <div className="grid grid-cols-[54px_minmax(0,1fr)_64px_64px] bg-[var(--sand)] px-3 py-3 text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--fairway)]/68">
-            <span>Pos</span>
-            <span>Team</span>
-            <span className="text-right">Thru</span>
-            <span className="text-right">Total</span>
-          </div>
-          <div className="divide-y divide-[var(--mist)]">
-            {leaderboard.map((row, index) => (
-              <article
-                key={row.teamId}
-                className="grid min-h-16 grid-cols-[54px_minmax(0,1fr)_64px_64px] items-center gap-0 px-3 py-3"
-              >
-                <span className="flex h-9 w-9 items-center justify-center rounded-full bg-[var(--pine)] text-sm font-semibold text-white">
-                  {index + 1}
-                </span>
-                <div className="min-w-0">
-                  <p className="truncate text-base font-semibold text-[var(--ink)]">{row.teamName}</p>
-                  <p className="mt-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-[var(--fairway)]/58">
-                    {row.teeTime}
-                  </p>
-                </div>
-                <p className="text-right text-lg font-semibold text-[var(--ink)]">{row.thru}</p>
-                <p className="text-right text-lg font-semibold text-[var(--ink)]">
-                  {row.holesComplete ? row.total : "-"}
-                </p>
-              </article>
-            ))}
-          </div>
+        <div className="space-y-2">
+          {leaderboard.map((row, index) => (
+            <LeaderboardCard key={row.teamId} row={row} position={index + 1} />
+          ))}
         </div>
       </Section>
 
@@ -254,10 +229,73 @@ function AnchorButton({ href, children }: { href: string; children: string }) {
   return (
     <a
       href={href}
-      className="flex min-h-12 items-center justify-center rounded-[18px] bg-[var(--pine)] px-3 text-center text-sm font-semibold text-white shadow-[0_10px_18px_rgba(17,32,23,0.16)]"
+      className="focus-ring flex min-h-12 items-center justify-center rounded-[18px] bg-[var(--pine)] px-3 text-center text-sm font-semibold text-white shadow-[0_10px_18px_rgba(17,32,23,0.16)] transition hover:bg-[#103126]"
     >
       {children}
     </a>
+  );
+}
+
+function LeaderboardCard({
+  row,
+  position,
+}: {
+  row: ReturnType<typeof buildLeaderboard>[number];
+  position: number;
+}) {
+  const hasScore = row.holesComplete > 0;
+  const isLeader = position === 1;
+
+  return (
+    <article
+      className={`overflow-hidden rounded-[22px] border shadow-[0_10px_24px_rgba(17,32,23,0.05)] ${
+        isLeader
+          ? "border-[#d4bf83] bg-[linear-gradient(135deg,#fffdfa_0%,#fff5d9_100%)]"
+          : "border-[var(--mist)] bg-white"
+      }`}
+    >
+      <div className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 px-3.5 py-3.5">
+        <span
+          className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-sm font-semibold ${
+            isLeader ? "bg-[var(--pine)] text-white" : "bg-[var(--sand)] text-[var(--ink)]"
+          }`}
+        >
+          {position}
+        </span>
+        <div className="min-w-0">
+          <p className="truncate text-base font-semibold leading-tight text-[var(--ink)]">
+            {row.teamName}
+          </p>
+          <p className="mt-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--fairway)]/68">
+            {hasScore ? "On course" : row.teeTime}
+          </p>
+        </div>
+        <div className="text-right">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-[var(--fairway)]/62">
+            Total
+          </p>
+          <p className="mt-1 whitespace-nowrap text-xl font-semibold leading-none text-[var(--ink)]">
+            {hasScore ? row.total : "-"}
+          </p>
+        </div>
+      </div>
+      <div className="grid grid-cols-3 gap-px border-t border-[var(--mist)]/80 bg-[var(--mist)]/80">
+        <LeaderboardMetric label="Thru" value={row.thru} />
+        <LeaderboardMetric label="Tee" value={row.teeTime} />
+        <LeaderboardMetric label="Status" value={hasScore ? "Live" : "Ready"} />
+      </div>
+    </article>
+  );
+}
+
+function LeaderboardMetric({ label, value }: { label: string; value: string | number }) {
+  return (
+    <div className="min-w-0 bg-white/82 px-3.5 py-3">
+      <p className="truncate text-[10px] font-semibold uppercase tracking-[0.16em] text-[var(--fairway)]/66">
+        {label}
+      </p>
+      <p className="mt-1 truncate text-base font-semibold text-[var(--ink)]">{value}</p>
+    </div>
   );
 }
 
