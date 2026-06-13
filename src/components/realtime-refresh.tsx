@@ -11,8 +11,12 @@ export function RealtimeRefresh({ eventId }: { eventId: string }) {
     const client = createBrowserSupabaseClient();
 
     if (!client) {
-      return;
+      const refreshInterval = window.setInterval(() => router.refresh(), 10_000);
+
+      return () => window.clearInterval(refreshInterval);
     }
+
+    const refreshInterval = window.setInterval(() => router.refresh(), 30_000);
 
     const channel = client
       .channel(`event-${eventId}`)
@@ -39,6 +43,7 @@ export function RealtimeRefresh({ eventId }: { eventId: string }) {
       .subscribe();
 
     return () => {
+      window.clearInterval(refreshInterval);
       client.removeChannel(channel);
     };
   }, [eventId, router]);

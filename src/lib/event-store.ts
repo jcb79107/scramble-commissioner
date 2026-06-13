@@ -1,6 +1,11 @@
 import { revalidatePath } from "next/cache";
+import { nanoid } from "nanoid";
 import { ADMIN_PATH, resolveAccessToken } from "./access-links";
 import { chevyChaseSeed } from "./chevy-chase-seed";
+import {
+  getGitHubStoredEvent,
+  mutateGitHubStoredEvent,
+} from "./github-event-store";
 import { createServerSupabaseClient } from "./supabase";
 import type {
   HoleConfig,
@@ -87,7 +92,7 @@ export async function getActiveEvent(): Promise<ScrambleEvent> {
   const client = createServerSupabaseClient();
 
   if (!client) {
-    return chevyChaseSeed;
+    return (await getGitHubStoredEvent()) ?? chevyChaseSeed;
   }
 
   try {
@@ -112,8 +117,18 @@ export async function submitTeamScores(
   const client = createServerSupabaseClient();
 
   if (!client) {
+    const result = await mutateGitHubStoredEvent((draft) => {
+      for (const [hole, strokes] of Object.entries(scoresByHole)) {
+        upsertTeamScore(draft, access.teamId!, Number(hole), strokes);
+      }
+    });
+
+    if (!result.ok) {
+      return { ok: false, message: result.message };
+    }
+
     revalidateScorePaths(token);
-    return { ok: true, message: "Scores saved for this device.", data: null };
+    return { ok: true, message: "Scores saved.", data: null };
   }
 
   const rows = Object.entries(scoresByHole).map(([hole, strokes]) => ({
@@ -164,8 +179,24 @@ export async function submitContestEntry(
   const client = createServerSupabaseClient();
 
   if (!client) {
+    const result = await mutateGitHubStoredEvent((draft) => {
+      draft.proxyEntries.push({
+        id: `entry-${Date.now()}-${nanoid(8)}`,
+        playerId,
+        hole: access.holeNumber!,
+        kind: access.sideGame!,
+        measuredDistance,
+        unit: access.sideGame === "closest_to_pin" ? "feet" : "yards",
+        isValid,
+      });
+    });
+
+    if (!result.ok) {
+      return { ok: false, message: result.message };
+    }
+
     revalidateContestPaths(token);
-    return { ok: true, message: "Contest entry saved for this device.", data: null };
+    return { ok: true, message: "Contest entry saved.", data: null };
   }
 
   const { error } = await client.from("proxy_entries").insert({
@@ -191,8 +222,19 @@ export async function updateEventDetails(formData: FormData) {
   const client = createServerSupabaseClient();
 
   if (!client) {
+    const result = await mutateGitHubStoredEvent((draft) => {
+      draft.name = String(formData.get("name") ?? event.name);
+      draft.date = String(formData.get("date") ?? event.date);
+      draft.venue = String(formData.get("venue") ?? event.venue);
+      draft.address = String(formData.get("address") ?? event.address);
+    });
+
+    if (!result.ok) {
+      return { ok: false, message: result.message };
+    }
+
     revalidateAllEventPaths();
-    return { ok: true, message: "Event details saved for this device.", data: null } satisfies StoreResult<null>;
+    return { ok: true, message: "Event details saved.", data: null } satisfies StoreResult<null>;
   }
 
   const { error } = await client
@@ -218,8 +260,25 @@ export async function updateMoneySettings(formData: FormData) {
   const client = createServerSupabaseClient();
 
   if (!client) {
+    const result = await mutateGitHubStoredEvent((draft) => {
+      draft.money = {
+        roundCostEstimate: Number(formData.get("roundCostEstimate") ?? event.money.roundCostEstimate),
+        scrambleBuyIn: Number(formData.get("scrambleBuyIn") ?? event.money.scrambleBuyIn),
+        closestToPinBuyInPerHole: Number(
+          formData.get("closestToPinBuyInPerHole") ?? event.money.closestToPinBuyInPerHole,
+        ),
+        longDriveBuyInPerHole: Number(
+          formData.get("longDriveBuyInPerHole") ?? event.money.longDriveBuyInPerHole,
+        ),
+      };
+    });
+
+    if (!result.ok) {
+      return { ok: false, message: result.message };
+    }
+
     revalidateAllEventPaths();
-    return { ok: true, message: "Money settings saved for this device.", data: null } satisfies StoreResult<null>;
+    return { ok: true, message: "Money settings saved.", data: null } satisfies StoreResult<null>;
   }
 
   const { error } = await client
@@ -253,8 +312,24 @@ export async function updateTeamDetails(formData: FormData) {
   }
 
   if (!client) {
+    const result = await mutateGitHubStoredEvent((draft) => {
+      const team = draft.teams.find((item) => item.id === teamId);
+
+      if (!team) {
+        return;
+      }
+
+      team.name = String(formData.get("name") ?? team.name);
+      team.teeTime = String(formData.get("teeTime") ?? team.teeTime);
+      team.captainPlayerId = String(formData.get("captainPlayerId") ?? team.captainPlayerId);
+    });
+
+    if (!result.ok) {
+      return { ok: false, message: result.message };
+    }
+
     revalidateAllEventPaths();
-    return { ok: true, message: "Team details saved for this device.", data: null } satisfies StoreResult<null>;
+    return { ok: true, message: "Team details saved.", data: null } satisfies StoreResult<null>;
   }
 
   const { error } = await client
@@ -287,8 +362,16 @@ export async function updateScoreOverride(formData: FormData) {
   }
 
   if (!client) {
+    const result = await mutateGitHubStoredEvent((draft) => {
+      upsertTeamScore(draft, teamId, hole, strokes);
+    });
+
+    if (!result.ok) {
+      return { ok: false, message: result.message };
+    }
+
     revalidateAllEventPaths();
-    return { ok: true, message: "Score override saved for this device.", data: null } satisfies StoreResult<null>;
+    return { ok: true, message: "Score override saved.", data: null } satisfies StoreResult<null>;
   }
 
   const { error } = await client.from("scores").upsert(
@@ -322,6 +405,28 @@ function revalidateContestPaths(token: string) {
 function revalidateAllEventPaths() {
   revalidatePath("/");
   revalidatePath(ADMIN_PATH);
+}
+
+function upsertTeamScore(
+  event: ScrambleEvent,
+  teamId: string,
+  hole: number,
+  strokes: number | null,
+) {
+  const existingScore = event.scores.find(
+    (score) => score.teamId === teamId && score.hole === hole,
+  );
+
+  if (existingScore) {
+    existingScore.strokes = strokes;
+    return;
+  }
+
+  event.scores.push({
+    teamId,
+    hole,
+    strokes,
+  });
 }
 
 async function fetchSupabaseEvent(client: ReturnType<typeof createServerSupabaseClient>) {
