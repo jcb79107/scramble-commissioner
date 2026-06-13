@@ -31,17 +31,17 @@ export async function logoutAdmin() {
 }
 
 export async function updateEventDetailsAction(formData: FormData) {
-  await updateEventDetails(formData);
+  return updateEventDetails(formData);
 }
 
 export async function updateMoneySettingsAction(formData: FormData) {
-  await updateMoneySettings(formData);
+  return updateMoneySettings(formData);
 }
 
 export async function updateTeamDetailsAction(formData: FormData) {
-  await updateTeamDetails(formData);
+  return updateTeamDetails(formData);
 }
 
 export async function updateScoreOverrideAction(formData: FormData) {
-  await updateScoreOverride(formData);
+  return updateScoreOverride(formData);
 }

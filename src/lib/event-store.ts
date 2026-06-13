@@ -190,8 +190,12 @@ export async function updateEventDetails(formData: FormData) {
   const event = await getActiveEvent();
   const client = createServerSupabaseClient();
 
-  if (client) {
-    await client
+  if (!client) {
+    revalidateAllEventPaths();
+    return { ok: true, message: "Event details saved for this device.", data: null } satisfies StoreResult<null>;
+  }
+
+  const { error } = await client
       .from("events")
       .update({
         name: String(formData.get("name") ?? event.name),
@@ -200,17 +204,25 @@ export async function updateEventDetails(formData: FormData) {
         address: String(formData.get("address") ?? event.address),
       })
       .eq("id", event.id);
+
+  if (error) {
+    return { ok: false, message: error.message };
   }
 
   revalidateAllEventPaths();
+  return { ok: true, message: "Event details saved.", data: null };
 }
 
 export async function updateMoneySettings(formData: FormData) {
   const event = await getActiveEvent();
   const client = createServerSupabaseClient();
 
-  if (client) {
-    await client
+  if (!client) {
+    revalidateAllEventPaths();
+    return { ok: true, message: "Money settings saved for this device.", data: null } satisfies StoreResult<null>;
+  }
+
+  const { error } = await client
       .from("events")
       .update({
         round_cost_estimate: Number(formData.get("roundCostEstimate") ?? event.money.roundCostEstimate),
@@ -223,17 +235,29 @@ export async function updateMoneySettings(formData: FormData) {
         ),
       })
       .eq("id", event.id);
+
+  if (error) {
+    return { ok: false, message: error.message };
   }
 
   revalidateAllEventPaths();
+  return { ok: true, message: "Money settings saved.", data: null };
 }
 
 export async function updateTeamDetails(formData: FormData) {
   const client = createServerSupabaseClient();
   const teamId = String(formData.get("teamId") ?? "");
 
-  if (client && teamId) {
-    await client
+  if (!teamId) {
+    return { ok: false, message: "Team id is missing." };
+  }
+
+  if (!client) {
+    revalidateAllEventPaths();
+    return { ok: true, message: "Team details saved for this device.", data: null } satisfies StoreResult<null>;
+  }
+
+  const { error } = await client
       .from("teams")
       .update({
         name: String(formData.get("name") ?? ""),
@@ -241,9 +265,13 @@ export async function updateTeamDetails(formData: FormData) {
         captain_player_id: String(formData.get("captainPlayerId") ?? ""),
       })
       .eq("id", teamId);
+
+  if (error) {
+    return { ok: false, message: error.message };
   }
 
   revalidateAllEventPaths();
+  return { ok: true, message: "Team details saved.", data: null };
 }
 
 export async function updateScoreOverride(formData: FormData) {
@@ -254,8 +282,16 @@ export async function updateScoreOverride(formData: FormData) {
   const strokesValue = String(formData.get("strokes") ?? "");
   const strokes = strokesValue ? Number(strokesValue) : null;
 
-  if (client && teamId && Number.isInteger(hole)) {
-    await client.from("scores").upsert(
+  if (!teamId || !Number.isInteger(hole)) {
+    return { ok: false, message: "Team and hole are required." };
+  }
+
+  if (!client) {
+    revalidateAllEventPaths();
+    return { ok: true, message: "Score override saved for this device.", data: null } satisfies StoreResult<null>;
+  }
+
+  const { error } = await client.from("scores").upsert(
       {
         event_id: event.id,
         team_id: teamId,
@@ -264,9 +300,13 @@ export async function updateScoreOverride(formData: FormData) {
       },
       { onConflict: "team_id,hole_number" },
     );
+
+  if (error) {
+    return { ok: false, message: error.message };
   }
 
   revalidateAllEventPaths();
+  return { ok: true, message: "Score override saved.", data: null };
 }
 
 function revalidateScorePaths(token: string) {

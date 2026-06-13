@@ -58,6 +58,7 @@ export function AdminHQ({
   event,
   origin,
   activeSection,
+  feedback,
   logoutAction,
   updateEventAction,
   updateMoneyAction,
@@ -67,6 +68,7 @@ export function AdminHQ({
   event: ScrambleEvent;
   origin: string | null | undefined;
   activeSection: AdminSection;
+  feedback?: { tone: "success" | "error"; message: string } | null;
   logoutAction: () => void | Promise<void>;
   updateEventAction: (formData: FormData) => void | Promise<void>;
   updateMoneyAction: (formData: FormData) => void | Promise<void>;
@@ -96,6 +98,17 @@ export function AdminHQ({
         }
       />
       <ScreenBody>
+        {feedback && (
+          <div
+            className={`rounded-[20px] border px-4 py-3 text-sm font-semibold ${
+              feedback.tone === "success"
+                ? "border-[#b7d8c5] bg-[#edf8f0] text-[#174f38]"
+                : "border-[#f4b8b8] bg-[#fff1f1] text-[#a33b3b]"
+            }`}
+          >
+            {feedback.message}
+          </div>
+        )}
 
         <StatGrid>
           <StatTile label="Scores" value={`${completeScores}/${event.scores.length}`} />
