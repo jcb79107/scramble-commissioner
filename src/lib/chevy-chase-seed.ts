@@ -136,11 +136,56 @@ const teams: Team[] = [
   },
 ];
 
+const burntRedParByHole: Record<number, number> = {
+  1: 4,
+  2: 5,
+  3: 4,
+  4: 5,
+  5: 4,
+  6: 3,
+  7: 4,
+  8: 4,
+  9: 3,
+  10: 4,
+  11: 4,
+  12: 4,
+  13: 3,
+  14: 4,
+  15: 5,
+  16: 3,
+  17: 4,
+  18: 5,
+};
+
+// Traditions at Chevy Chase publishes Burnt Red hole-by-hole scorecard yardages.
+// USGA NCRDB lists the Burnt Red men's course at Par 72, 69.4/126, length 6046;
+// the app uses the course scorecard yardages below for long-drive measurements.
+const burntRedYardageByHole: Record<number, number> = {
+  1: 359,
+  2: 453,
+  3: 379,
+  4: 485,
+  5: 406,
+  6: 117,
+  7: 336,
+  8: 375,
+  9: 157,
+  10: 369,
+  11: 322,
+  12: 405,
+  13: 156,
+  14: 319,
+  15: 484,
+  16: 132,
+  17: 307,
+  18: 517,
+};
+
 export const chevyChaseSeed: ScrambleEvent = {
   id: "chevy-chase-2026",
   name: "Chevy Chase Country Club Scramble",
   date: "2026-06-13",
-  venue: "Chevy Chase Country Club",
+  venue: "Traditions at Chevy Chase",
   address: "1000 N Milwaukee Ave, Wheeling, IL 60090",
   commissionerToken: "commissioner-preview-token",
   publicToken: "public-preview-token",
@@ -148,31 +193,16 @@ export const chevyChaseSeed: ScrambleEvent = {
   teams,
   holes: Array.from({ length: 18 }, (_, index) => {
     const number = index + 1;
-    const parByHole: Record<number, number> = {
-      2: 5,
-      4: 5,
-      6: 3,
-      9: 3,
-      13: 3,
-      15: 5,
-      16: 3,
-      18: 5,
-    };
-    const par = parByHole[number] ?? 4;
-    const ctpYardages: Record<number, number> = {
-      6: 117,
-      9: 157,
-      13: 156,
-      16: 132,
-    };
+    const par = burntRedParByHole[number];
+    const teeYardage = burntRedYardageByHole[number];
 
-    if (number in ctpYardages) {
+    if ([6, 9, 13, 16].includes(number)) {
       return {
         number,
         par,
-        teeYardage: ctpYardages[number],
+        teeYardage,
         sideGame: "closest_to_pin" as const,
-        label: `Closest to the Pin (${ctpYardages[number]} yards)`,
+        label: `Closest to the Pin (${teeYardage} yards)`,
         contestAccessToken: `contest-hole-${number}-preview-token`,
       };
     }
@@ -181,13 +211,14 @@ export const chevyChaseSeed: ScrambleEvent = {
       return {
         number,
         par,
+        teeYardage,
         sideGame: "long_drive" as const,
         label: "Long Drive",
         contestAccessToken: `contest-hole-${number}-preview-token`,
       };
     }
 
-    return { number, par };
+    return { number, par, teeYardage };
   }),
   scores: teams.flatMap((team) =>
     Array.from({ length: 18 }, (_, index) => ({

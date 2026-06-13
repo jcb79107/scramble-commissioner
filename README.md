@@ -107,7 +107,9 @@ V1 uses opaque access tokens for team scorer and contest marker links. Server ac
 The initial seed data is based on the Chevy Chase Country Club Scramble:
 
 - Date: June 13, 2026
-- Venue: Chevy Chase Country Club, Wheeling, IL
+- Venue: Traditions at Chevy Chase, Wheeling, IL
+- Tee markers: Burnt Red
+- Scorecard: Par 72 with Burnt Red hole yardages from the course scorecard
 - Teams: 6
 - Players: 24
 - Closest-to-the-pin holes: 6, 9, 13, 16

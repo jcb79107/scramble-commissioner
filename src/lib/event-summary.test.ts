@@ -34,6 +34,51 @@ describe("event summary", () => {
     );
   });
 
+  it("seeds Burnt Red tee yardages for every hole", () => {
+    expect(chevyChaseSeed.venue).toBe("Traditions at Chevy Chase");
+    expect(chevyChaseSeed.holes.map((hole) => hole.teeYardage)).toEqual([
+      359,
+      453,
+      379,
+      485,
+      406,
+      117,
+      336,
+      375,
+      157,
+      369,
+      322,
+      405,
+      156,
+      319,
+      484,
+      132,
+      307,
+      517,
+    ]);
+    expect(
+      chevyChaseSeed.holes.reduce((sum, hole) => sum + (hole.teeYardage ?? 0), 0),
+    ).toBe(6078);
+  });
+
+  it("keeps event contest holes aligned to the final sheet", () => {
+    expect(
+      chevyChaseSeed.holes
+        .filter((hole) => hole.sideGame === "closest_to_pin")
+        .map((hole) => [hole.number, hole.teeYardage]),
+    ).toEqual([
+      [6, 117],
+      [9, 157],
+      [13, 156],
+      [16, 132],
+    ]);
+    expect(
+      chevyChaseSeed.holes
+        .filter((hole) => hole.sideGame === "long_drive")
+        .map((hole) => hole.number),
+    ).toEqual([2, 4, 15, 18]);
+  });
+
   it("builds public fun stats from event data", () => {
     const stats = getFunStats(chevyChaseSeed);
 

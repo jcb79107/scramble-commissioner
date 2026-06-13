@@ -51,6 +51,8 @@ export function TeamScorecardEditor({
     return sum + getHolePar(getHole(event, Number(holeNumber)));
   }, 0);
   const totalVsPar = completedHoles > 0 && roundTotal != null ? roundTotal - totalParForCompleted : null;
+  const visibleYardageTotal = sumYardage(visibleHoles);
+  const roundYardageTotal = sumYardage(event.holes);
   const showRoundTotal = segment === "back";
   const gridTemplateColumns = `132px repeat(${visibleHoles.length}, 56px) ${showRoundTotal ? "62px 62px" : "62px"}`;
   const minWidth = showRoundTotal ? "760px" : "698px";
@@ -166,8 +168,8 @@ export function TeamScorecardEditor({
             <MetaRow
               label="Yards"
               values={visibleHoles.map((hole) => hole.teeYardage ?? "-")}
-              activeTotal=""
-              roundTotal="6046"
+              activeTotal={formatTotal(visibleYardageTotal)}
+              roundTotal={formatTotal(roundYardageTotal)}
               showRoundTotal={showRoundTotal}
               rowClassName="bg-[#fffaf0]"
               totalClassName="bg-[#f7f1e3]"
@@ -368,6 +370,18 @@ function sumScores(scores: Record<number, string>, holeNumbers: number[]) {
   }
 
   return values.reduce((sum, score) => sum + score, 0);
+}
+
+function sumYardage(holes: HoleConfig[]) {
+  const values = holes
+    .map((hole) => hole.teeYardage)
+    .filter((value): value is number => typeof value === "number");
+
+  if (!values.length) {
+    return null;
+  }
+
+  return values.reduce((sum, yardage) => sum + yardage, 0);
 }
 
 function formatTotal(value: number | null) {
