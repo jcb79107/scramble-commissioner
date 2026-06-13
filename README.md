@@ -1,4 +1,4 @@
-# Scramble Commissioner
+# Scramble
 
 An open-source, mobile-first web app for running golf scrambles.
 

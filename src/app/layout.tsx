@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Chevy Chase Scramble",
-  description: "Public results, private score entry, contest tracking, and admin tools for the Chevy Chase Scramble.",
+  title: "Scramble",
+  description: "Public results, private score entry, contest tracking, and admin tools for Scramble.",
   manifest: "/site.webmanifest",
   appleWebApp: {
     title: "Scramble",
