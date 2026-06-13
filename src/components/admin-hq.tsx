@@ -6,6 +6,7 @@ import {
 import { buildLeaderboard, getPlayerBalances } from "@/lib/calculations";
 import { getContestHoles, getTeamCaptain } from "@/lib/event-summary";
 import type { ScrambleEvent } from "@/lib/types";
+import { PrivateLinkActions } from "./private-link-actions";
 import {
   BrandHeader,
   ScreenBody,
@@ -296,14 +297,9 @@ function PrivateLinksList({ links }: { links: PrivateAccessLink[] }) {
                 <div className="truncate text-sm font-black">{link.label}</div>
                 <div className="text-xs text-[var(--muted)]">{link.description}</div>
               </div>
-              <a
-                href={link.href}
-                className="shrink-0 rounded-full bg-[var(--pine)] px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.14em] text-white"
-              >
-                Open
-              </a>
+              <PrivateLinkActions href={link.href} label={link.label} />
             </div>
-            <p className="mt-2 truncate rounded-2xl bg-[var(--sand)]/70 px-3 py-2 font-mono text-[10px] text-[var(--muted)]">
+            <p className="mt-2 break-all rounded-2xl bg-[var(--sand)]/70 px-3 py-2 font-mono text-[10px] leading-5 text-[var(--muted)]">
               {link.href}
             </p>
           </div>
